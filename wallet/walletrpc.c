@@ -641,8 +641,40 @@ static struct command_result *json_listfunds(struct command *cmd,
 	list_for_each(&cmd->ld->peers, p, list) {
 		struct channel *c;
 		list_for_each(&p->channels, c, list) {
+ 			if (c->state != CHANNELD_NORMAL)
+				continue;
 			json_object_start(response, NULL);
 			json_add_node_id(response, "peer_id", &p->id);
+			if (c->scid)
+				json_add_short_channel_id(response,
+							  "short_channel_id",
+							  c->scid);
+
+			json_add_amount_sat_compat(response,
+						   amount_msat_to_sat_round_down(c->our_msat),
+						   "channel_sat",
+						   "our_amount_msat");
+			json_add_amount_sat_compat(response, c->funding,
+						   "channel_total_sat",
+						   "amount_msat");
+			json_add_txid(response, "funding_txid",
+				      &c->funding_txid);
+			json_add_num(response, "funding_output",
+				      c->funding_outnum);
+			json_object_end(response);
+		}
+	}
+	json_array_end(response);
+
+	json_array_start(response, "non operational channels");
+	list_for_each(&cmd->ld->peers, p, list) {
+		struct channel *c;
+		list_for_each(&p->channels, c, list) {
+ 			if (c->state == CHANNELD_NORMAL)
+				continue;
+			json_object_start(response, NULL);
+			json_add_node_id(response, "peer_id", &p->id);
+			json_add_channel_state(response, "state",c->state);
 			if (c->scid)
 				json_add_short_channel_id(response,
 							  "short_channel_id",

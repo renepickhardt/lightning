@@ -14,8 +14,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+
 #define JSMN_STRICT 1
 # include <external/jsmn/jsmn.h>
+
+enum channel_state;
 
 struct bitcoin_tx;
 struct bitcoin_txid;
@@ -100,6 +103,10 @@ struct command_result *param_feerate(struct command *cmd, const char *name,
 void json_add_short_channel_id(struct json_stream *response,
 			       const char *fieldname,
 			       const struct short_channel_id *id);
+
+void json_add_channel_state(struct json_stream *response,
+			       const char *fieldname,
+			       const enum channel_state state);
 
 bool json_tok_channel_id(const char *buffer, const jsmntok_t *tok,
 			 struct channel_id *cid);
