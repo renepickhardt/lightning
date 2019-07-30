@@ -18,6 +18,8 @@
 #include <inttypes.h>
 #include <lightningd/bitcoind.h>
 #include <lightningd/chaintopology.h>
+#include <lightningd/channel.h>
+#include <lightningd/channel_state.h>
 #include <lightningd/hsm_control.h>
 #include <lightningd/json.h>
 #include <lightningd/jsonrpc.h>
@@ -579,6 +581,14 @@ static const struct json_command listaddrs_command = {
 	"Show addresses of your internal wallet. Use `newaddr` to generate a new address."
 };
 AUTODATA(json_command, &listaddrs_command);
+
+static void json_add_channel_state(struct json_stream *response,
+			       const char *fieldname,
+			       const enum channel_state state)
+{
+	json_add_member(response, fieldname, true, "%s", channel_state_str(state));
+}
+
 
 static struct command_result *json_listfunds(struct command *cmd,
 					     const char *buffer,

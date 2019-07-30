@@ -14,8 +14,6 @@
 #include <common/wallet_tx.h>
 #include <common/wireaddr.h>
 #include <gossipd/routing.h>
-#include <lightningd/channel.h>
-#include <lightningd/channel_state.h>
 #include <lightningd/json.h>
 #include <lightningd/json_stream.h>
 #include <lightningd/jsonrpc.h>
@@ -133,13 +131,6 @@ void json_add_short_channel_id(struct json_stream *response,
 			short_channel_id_blocknum(scid),
 			short_channel_id_txnum(scid),
 			short_channel_id_outnum(scid));
-}
-
-void json_add_channel_state(struct json_stream *response,
-			       const char *fieldname,
-			       const enum channel_state state)
-{
-	json_add_member(response, fieldname, true, "%s", channel_state_str(state));
 }
 
 struct command_result *param_short_channel_id(struct command *cmd,
